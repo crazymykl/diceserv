@@ -1,0 +1,16 @@
+#!/usr/bin/env coffee
+
+dicebot = require '../diceserv'
+argv = require('optimist')
+  .options 'p',
+     alias: 'port'
+     default: 80
+     describe: "Specify a port to listen on."
+   .usage("Set up a server listening for dice expressions.\n Usage: $0")
+   .argv
+
+port = argv.port
+
+console.log "Starting diceserv on port #{port}..."
+
+dicebot.run port
