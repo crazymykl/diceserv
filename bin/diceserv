@@ -4,7 +4,7 @@ dicebot = require '../diceserv'
 argv = require('optimist')
   .options 'p',
      alias: 'port'
-     default: 80
+     default: (process.env.PORT or 5000)
      describe: "Specify a port to listen on."
    .usage("Set up a server listening for dice expressions.\n Usage: $0")
    .argv
