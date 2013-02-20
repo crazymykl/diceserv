@@ -4,12 +4,18 @@ PEGjsCoffeePlugin = require 'pegjs-coffee-plugin'
 PEGjsCoffeePlugin.addTo PEG
 
 DiceParser = PEG.buildParser '''
-expression
-  = multiplicative_expression
+mux_expression
+  = lhs:multiplicative_expression op:[,#] rhs:mux_expression
+  {
+      type: "MuxExpression"
+      operator: op
+      left: lhs
+      right: rhs
+  } / multiplicative_expression
 
 multiplicative_expression
-  = head:additive_expression tail:([*/] expression)*
-  { 
+  = head:additive_expression tail:([*/] multiplicative_expression)*
+  {
     result = head
     for node in tail
       result =
@@ -21,7 +27,7 @@ multiplicative_expression
   }
 
 additive_expression
-  = head:dice_expression tail:([+-] expression)* 
+  = head:dice_expression tail:([+-] multiplicative_expression)* 
   { 
     result = head
     for node in tail
@@ -43,7 +49,7 @@ dice_expression
     } / unary_expression
 
 unary_expression
- = op:[-d] val:expression
+ = op:[-d] val:multiplicative_expression
   {
     type:         "UnaryExpression"
     operator:     if op == 'd' then "DiceRoll" else op
@@ -51,7 +57,7 @@ unary_expression
   } / value
 
 value
- = "(" expr:expression ")" { expr } / number
+ = "(" expr:multiplicative_expression ")" { expr } / number
 
 number
   = num:[0-9]+

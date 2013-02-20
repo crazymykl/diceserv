@@ -7,6 +7,20 @@ randInt = (min, max) ->
 class DiceInterpretter
   constructor: (@results = [], @dice_rolled = []) ->
 
+  MuxOps: (op) ->
+    switch op
+      when ','
+        (left, right) =>
+          @interpret_subroll left
+          @interpret_subroll right
+      when '#'
+        (times, ast) =>
+          count = @interpret_subroll times
+          for _ in [1..count]
+            @interpret_subroll ast
+      else
+        throw "Bad multiplex operation: #{op}"
+
   BinOps: (op) ->
     switch op
       when '*'
@@ -41,17 +55,23 @@ class DiceInterpretter
 
   interpret: (expr) ->
     @results = []
-    @interpret_subroll expr
+    @interpret_subroll DiceParser.parse expr
     @results
 
-  interpret_subroll: (expr) ->
+  interpret_subroll: (ast) ->
     @dice_rolled = []
-    @results.push
-      result: @interpret_node DiceParser.parse expr
-      rolls: @dice_rolled
+    result = @interpret_node ast
+    if result?
+      @results.push
+        result: result
+        rolls: @dice_rolled
+    result
 
   interpret_node: (node) ->
     switch node.type
+      when "MuxExpression"
+        @MuxOps(node.operator) node.left, node.right
+        undefined
       when "UnaryExpression"
         @UnOps(node.operator) @interpret_node(node.operand)
       when "BinaryExpression"
