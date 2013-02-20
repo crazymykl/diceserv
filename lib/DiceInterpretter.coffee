@@ -5,7 +5,7 @@ randInt = (min, max) ->
   Math.floor(Math.random() * values) + min
 
 class DiceInterpretter
-  constructor: (@context, @dice_rolled = []) ->
+  constructor: (@results = [], @dice_rolled = []) ->
 
   BinOps: (op) ->
     switch op
@@ -40,9 +40,15 @@ class DiceInterpretter
     result
 
   interpret: (expr) ->
+    @results = []
+    @interpret_subroll expr
+    @results
+
+  interpret_subroll: (expr) ->
     @dice_rolled = []
-    { result: @interpret_node DiceParser.parse expr
-      rolls: @dice_rolled }
+    @results.push
+      result: @interpret_node DiceParser.parse expr
+      rolls: @dice_rolled
 
   interpret_node: (node) ->
     switch node.type
