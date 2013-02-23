@@ -77,7 +77,7 @@ class DiceInterpretter
       unless exception.name in ["DiceError", "SyntaxError"]
         throw exception
       exception.error = true
-      exception
+      [exception]
 
   interpret_subroll: (ast) ->
     result = @interpret_node ast
