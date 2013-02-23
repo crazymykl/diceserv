@@ -20,6 +20,7 @@ class DiceInterpretter
       when ','
         (left, right) =>
           @interpret_subroll left
+
           @interpret_node right
       when '#'
         (times, ast) =>
@@ -57,7 +58,6 @@ class DiceInterpretter
         throw "Bad unary operation: #{op}"
 
   roll: (dice, sides) =>
-    console.log dice
     return ZERO if dice == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
@@ -80,12 +80,11 @@ class DiceInterpretter
       exception
 
   interpret_subroll: (ast) ->
-    @dice_rolled = []
     result = @interpret_node ast
-    if result?
-      @results.push
-        result: result
-        rolls: @dice_rolled
+    @results.push
+      result: result
+      rolls: @dice_rolled
+    @dice_rolled = []
     result
 
   interpret_node: (node) ->
