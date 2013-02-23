@@ -1,6 +1,6 @@
 #!/usr/bin/env coffee
 
-dicebot = require '../diceserv'
+diceserv = require '../diceserv'
 argv = require('optimist')
   .options 'p',
      alias: 'port'
@@ -13,4 +13,4 @@ port = argv.port
 
 console.log "Starting diceserv on port #{port}..."
 
-dicebot.run port
+diceserv.run port
