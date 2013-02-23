@@ -27,8 +27,8 @@ multiplicative_expression
   }
 
 additive_expression
-  = head:dice_expression tail:([+-] multiplicative_expression)* 
-  { 
+  = head:dice_expression tail:([+-] multiplicative_expression)*
+  {
     result = head
     for node in tail
       result =
@@ -38,7 +38,7 @@ additive_expression
         right:    node[1]
     result
   }
-  
+
 dice_expression
   = lhs:value "d" rhs:dice_expression
     {
@@ -57,7 +57,7 @@ unary_expression
   } / value
 
 value
- = "(" expr:multiplicative_expression ")" { expr } / number
+ = "(" expr:mux_expression ")" { expr } / number
 
 number
   = num:[0-9]+

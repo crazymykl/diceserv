@@ -1,5 +1,9 @@
 DiceParser = require './DiceParser'
 
+class DiceError extends SyntaxError
+  constructor: (@message) ->
+    @name = "DiceError"
+
 randInt = (min, max) ->
   values = max - min + 1
   Math.floor(Math.random() * values) + min
@@ -12,12 +16,15 @@ class DiceInterpretter
       when ','
         (left, right) =>
           @interpret_subroll left
-          @interpret_subroll right
+          @interpret_node right
       when '#'
         (times, ast) =>
           count = @interpret_subroll times
-          for _ in [1..count]
+          throw new DiceError "Cannot roll #{count} times, minimum 1."
+          console.log count
+          for _ in [1...count]
             @interpret_subroll ast
+          @interpret_node ast
       else
         throw "Bad multiplex operation: #{op}"
 
@@ -55,8 +62,14 @@ class DiceInterpretter
 
   interpret: (expr) ->
     @results = []
-    @interpret_subroll DiceParser.parse expr
-    @results
+    try
+      @interpret_subroll DiceParser.parse expr
+      @results
+    catch exception
+      unless exception.name in ["DiceError", "SyntaxError"]
+        throw exception
+      exception.error = true
+      exception
 
   interpret_subroll: (ast) ->
     @dice_rolled = []
@@ -71,7 +84,6 @@ class DiceInterpretter
     switch node.type
       when "MuxExpression"
         @MuxOps(node.operator) node.left, node.right
-        undefined
       when "UnaryExpression"
         @UnOps(node.operator) @interpret_node(node.operand)
       when "BinaryExpression"
