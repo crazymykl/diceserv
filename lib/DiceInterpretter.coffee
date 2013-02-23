@@ -4,6 +4,10 @@ class DiceError extends SyntaxError
   constructor: (@message) ->
     @name = "DiceError"
 
+ZERO =
+  type: "Number"
+  value: 0
+
 randInt = (min, max) ->
   values = max - min + 1
   Math.floor(Math.random() * values) + min
@@ -20,8 +24,8 @@ class DiceInterpretter
       when '#'
         (times, ast) =>
           count = @interpret_subroll times
-          throw new DiceError "Cannot roll #{count} times, minimum 1."
-          console.log count
+          unless count > 0
+            throw new DiceError "Cannot roll #{count} times, minimum 1."
           for _ in [1...count]
             @interpret_subroll ast
           @interpret_node ast
@@ -53,6 +57,10 @@ class DiceInterpretter
         throw "Bad unary operation: #{op}"
 
   roll: (dice, sides) =>
+    console.log dice
+    return ZERO if dice == 0
+    if dice < 0
+      throw new DiceError "Cannot roll a negative number of dice."
     result = (randInt(1,sides) for i in [1..dice]).reduce (t, s) -> t + s
     @dice_rolled.push
       dice: dice
