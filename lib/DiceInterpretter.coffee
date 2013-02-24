@@ -1,3 +1,4 @@
+randInt = require('crypto-rand').randInt
 DiceParser = require './DiceParser'
 
 class DiceError extends SyntaxError
@@ -8,10 +9,6 @@ ZERO =
   type: "Number"
   value: 0
 
-randInt = (min, max) ->
-  values = max - min + 1
-  Math.floor(Math.random() * values) + min
-
 class DiceInterpretter
   constructor: (@results = [], @dice_rolled = []) ->
 
@@ -20,7 +17,6 @@ class DiceInterpretter
       when ','
         (left, right) =>
           @interpret_subroll left
-
           @interpret_node right
       when '#'
         (times, ast) =>
@@ -42,7 +38,7 @@ class DiceInterpretter
       when '-'
         (left, right) -> left - right
       when '/'
-        (left, right) -> Math.floor(left / right)
+        (left, right) -> (left / right) >> 0
       when 'DiceRoll'
         @roll
       else
@@ -61,7 +57,7 @@ class DiceInterpretter
     return ZERO if dice == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
-    result = (randInt(1,sides) for i in [1..dice]).reduce (t, s) -> t + s
+    result = (randInt(sides) for i in [1..dice]).reduce (t, s) -> t + s
     @dice_rolled.push
       dice: dice
       sides: sides
