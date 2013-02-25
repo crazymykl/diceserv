@@ -38,7 +38,7 @@ class DiceInterpretter
       when '-'
         (left, right) -> left - right
       when '/'
-        (left, right) -> (left / right) >> 0
+        (left, right) -> Math.floor(left / right)
       when 'DiceRoll'
         @roll
       else
