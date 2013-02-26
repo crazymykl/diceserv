@@ -1,5 +1,5 @@
-randInt = require('crypto-rand').randInt
-DiceParser = require './DiceParser'
+{randInt} = require 'crypto-rand'
+{parse} = require './DiceParser'
 
 class DiceError extends SyntaxError
   constructor: (@message) ->
@@ -67,7 +67,7 @@ class DiceInterpretter
   interpret: (expr) ->
     @results = []
     try
-      @interpret_subroll DiceParser.parse expr
+      @interpret_subroll parse expr
       @results
     catch exception
       unless exception.name in ["DiceError", "SyntaxError"]
@@ -101,4 +101,4 @@ class DiceInterpretter
 exports.interpret = (expr) ->
   new DiceInterpretter().interpret expr
 
-exports.parse = (expr) -> DiceParser.parse expr
+exports.parse = parse

@@ -1,9 +1,3 @@
-PEG = require 'pegjs'
-PEGjsCoffeePlugin = require 'pegjs-coffee-plugin'
-
-PEGjsCoffeePlugin.addTo PEG
-
-DiceParser = PEG.buildParser '''
 mux_expression
   = lhs:multiplicative_expression op:[,#] rhs:mux_expression
   {
@@ -66,6 +60,3 @@ number
     value: parseInt num.join(''), 10
   }
 
-'''
-
-exports.parse = (expr) -> DiceParser.parse expr

@@ -2,13 +2,16 @@
   "author": "Mike MacDonald <crazymykl@gmail.com>",
   "name": "diceserv",
   "description": "A dice-rolling web service for RPGs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "https://github.com/crazymykl/diceserv",
   "keywords": [
     "coffeescript",
     "dice",
     "rpg"
   ],
+  "scripts": {
+    "install": "cake build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/crazymykl/diceserv.git"

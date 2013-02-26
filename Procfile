@@ -1,1 +1,1 @@
-web: diceserv
+web: cake build && diceserv

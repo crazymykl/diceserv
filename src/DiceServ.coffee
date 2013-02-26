@@ -1,12 +1,11 @@
-DiceInterpretter = require './lib/DiceInterpretter'
+{interpret, parse} = require './DiceInterpretter'
 
 express = require 'express'
 app = express()
 app.use express.logger()
 app.use express.bodyParser()
 
-roll = (expr) -> DiceInterpretter.interpret expr
-parse = (expr) -> DiceInterpretter.parse expr
+roll = interpret
 
 app.get '/', (req, res) ->
   res.send '''

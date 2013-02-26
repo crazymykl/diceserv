@@ -1,16 +1,17 @@
-#!/usr/bin/env coffee
+#!/usr/bin/env node
+///
+var argv, diceserv, port;
 
-diceserv = require '../diceserv'
-argv = require('optimist')
-  .options 'p',
-     alias: 'port'
-     default: (process.env.PORT or 5000)
-     describe: "Specify a port to listen on."
-   .usage("Set up a server listening for dice expressions.\n Usage: $0")
-   .argv
+diceserv = require('../lib/DiceServ');
 
-port = argv.port
+argv = require('optimist').options('p', {
+  alias: 'port',
+  "default": process.env.PORT || 5000,
+  describe: "Specify a port to listen on."
+}).usage("Set up a server listening for dice expressions.\n Usage: $0").argv;
 
-console.log "Starting diceserv on port #{port}..."
+port = argv.port;
 
-diceserv.run port
+console.log("Starting diceserv on port " + port + "...");
+
+diceserv.run(port);
