@@ -19,7 +19,7 @@
   "main": "./diceserv",
   "engines": {
     "node": "0.8.x",
-    "npm": "1.1.x"
+    "npm": "1.2.x"
   },
   "dependencies": {
     "coffee-script": "1.x.x",
