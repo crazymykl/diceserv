@@ -43,7 +43,7 @@ dice_expression
     } / unary_expression
 
 unary_expression
- = op:[-d] val:multiplicative_expression
+ = op:[-d] val:dice_expression
   {
     type:         "UnaryExpression"
     operator:     if op == 'd' then "DiceRoll" else op

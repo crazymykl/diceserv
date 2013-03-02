@@ -54,9 +54,11 @@ class DiceInterpretter
         throw "Bad unary operation: #{op}"
 
   roll: (dice, sides) =>
-    return ZERO if dice == 0
+    return ZERO if dice == 0 or sides == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
+    if sides < 0
+      throw new DiceError "Dice must have a non-negative number of sides."
     result = (randInt(sides) for i in [1..dice]).reduce (t, s) -> t + s
     @dice_rolled.push
       dice: dice
