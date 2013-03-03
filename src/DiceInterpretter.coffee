@@ -5,10 +5,6 @@ class DiceError extends SyntaxError
   constructor: (@message) ->
     @name = "DiceError"
 
-ZERO =
-  type: "Number"
-  value: 0
-
 class DiceInterpretter
   constructor: (@results = [], @dice_rolled = []) ->
 
@@ -58,7 +54,7 @@ class DiceInterpretter
         throw "Bad unary operation: #{op}"
 
   roll: (dice, sides) =>
-    return ZERO if dice == 0 or sides == 0
+    return 0 if dice == 0 or sides == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
     if sides < 0
@@ -72,7 +68,7 @@ class DiceInterpretter
 
   sr4_pool: (dice, edge=0) =>
     dice += edge
-    return ZERO if dice == 0
+    return 0 if dice == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
     hits = 0
