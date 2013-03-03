@@ -1,10 +1,10 @@
 mux_expression
   = lhs:multiplicative_expression op:[,#] rhs:mux_expression
   {
-      type: "MuxExpression"
-      operator: op
-      left: lhs
-      right: rhs
+      type:       "MuxExpression"
+      operator:   op
+      left:       lhs
+      right:      rhs
   } / multiplicative_expression
 
 multiplicative_expression
@@ -36,10 +36,27 @@ additive_expression
 dice_expression
   = lhs:value "d" rhs:dice_expression
     {
-      type: "BinaryExpression"
-      operator: "DiceRoll"
-      left: lhs
-      right: rhs
+      type:       "BinaryExpression"
+      operator:   "DiceRoll"
+      left:       lhs
+      right:      rhs
+    } / dicepool_expression
+
+dicepool_expression
+  = lhs:value op:"sr" rhs:dice_expression
+    {
+      type:       "BinaryExpression"
+      operator:   "Shadowrun4DicePool"
+      left:       lhs
+      right:      rhs
+    } / postfix_dicepool_expression
+
+postfix_dicepool_expression
+  = val:value op:"sr"
+    {
+      type:       "UnaryExpression"
+      operator:   "Shadowrun4DicePool"
+      operand:    val
     } / unary_expression
 
 unary_expression

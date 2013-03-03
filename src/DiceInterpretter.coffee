@@ -41,6 +41,8 @@ class DiceInterpretter
         (left, right) -> Math.floor(left / right)
       when 'DiceRoll'
         @roll
+      when 'Shadowrun4DicePool'
+        @sr4_pool
       else
         throw "Bad binary operation: #{op}"
 
@@ -50,6 +52,8 @@ class DiceInterpretter
         (value) -> -value
       when 'DiceRoll'
         (sides) => @roll 1, sides
+      when 'Shadowrun4DicePool'
+        @sr4_pool
       else
         throw "Bad unary operation: #{op}"
 
@@ -61,10 +65,35 @@ class DiceInterpretter
       throw new DiceError "Dice must have a non-negative number of sides."
     result = (randInt(sides) for i in [1..dice]).reduce (t, s) -> t + s
     @dice_rolled.push
-      dice: dice
-      sides: sides
+      dice:   dice
+      sides:  sides
       result: result
     result
+
+  sr4_pool: (dice, edge=0) =>
+    dice += edge
+    return ZERO if dice == 0
+    if dice < 0
+      throw new DiceError "Cannot roll a negative number of dice."
+    hits = 0
+    ones = 0
+    pool_size = dice
+    while dice > 0
+      roll = randInt(6)
+      ++ones if roll == 1
+      ++hits if roll == 5
+      if roll == 6
+        ++dice if edge > 0
+        ++hits
+      --dice
+    glitch = ones > Math.floor(pool_size / 2)
+    glitch = 'critical' if glitch and hits == 0
+    @dice_rolled.push
+      pool:   pool_size
+      hits:   hits
+      edge:   (edge > 0)
+      glitch: glitch
+    hits
 
   interpret: (expr) ->
     @results = []
