@@ -21,9 +21,13 @@ app.get '/', (req, res) ->
     </form>
     '''
 app.post '/roll', (req, res) ->
+  res.header "Access-Control-Allow-Origin", "*"
+  res.header "Access-Control-Allow-Headers", "X-Requested-With"
   res.send roll req.body.roll
 
 app.post '/parse', (req, res) ->
+  res.header "Access-Control-Allow-Origin", "*"
+  res.header "Access-Control-Allow-Headers", "X-Requested-With"
   res.send parse req.body.roll
 
 
