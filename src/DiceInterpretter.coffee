@@ -25,6 +25,25 @@ class DiceInterpretter
       else
         throw "Bad multiplex operation: #{op}"
 
+  TernaryOps: (op) ->
+    switch op
+      when "RerollBelow"
+        (dice, sides, thresh) =>
+          @thresh_check sides, thresh
+          @roll dice, sides, below: thresh
+      when "RerollAbove"
+        (dice, sides, thresh) =>
+          @thresh_check sides, thresh
+          @roll dice, sides, above: thresh
+      when "KeepLow"
+        (dice, sides, kept) =>
+          @roll dice, sides, keep_low: kept
+      when "KeepHigh"
+        (dice, sides, kept) =>
+          @roll dice, sides, keep_high: kept
+      else
+        throw "Bad ternary op: #{op}"
+
   BinOps: (op) ->
     switch op
       when '*'
@@ -53,18 +72,34 @@ class DiceInterpretter
       else
         throw "Bad unary operation: #{op}"
 
-  roll: (dice, sides) =>
+  roll: (dice, sides, options={}) =>
     return 0 if dice == 0 or sides == 0
     if dice < 0
       throw new DiceError "Cannot roll a negative number of dice."
     if sides < 0
       throw new DiceError "Dice must have a non-negative number of sides."
-    result = (randInt(sides) for i in [1..dice]).reduce (t, s) -> t + s
+
+    _roll = (sides, above, below) ->
+      result = randInt(sides)
+      if (below? and result >= below) or (above? and result <= above)
+        _roll sides, above, below
+      else
+        result
+
+    result = (_roll(sides, options.above, options.below) for i in [1..dice])
+    result = result[-options.keep_low...options.keep_high]
+      .reduce (t, s) -> t + s
     @dice_rolled.push
       dice:   dice
       sides:  sides
       result: result
     result
+
+  thresh_check: (sides, thresh) ->
+    if 0 > thresh or thresh >= sides
+      throw new DiceError(
+        "Cannot reroll results above #{thresh} on #{sides}-sided dice."
+      )
 
   sr4_pool: (dice, edge=0) =>
     dice += edge
@@ -120,6 +155,11 @@ class DiceInterpretter
         left = @interpret_node(node.left)
         right = @interpret_node(node.right)
         @BinOps(node.operator) left, right
+      when "TernaryExpression"
+        left = @interpret_node(node.left)
+        middle = @interpret_node(node.middle)
+        right = @interpret_node(node.right)
+        @TernaryOps(node.operator) left, middle, right
       when "Number"
         node.value
       else

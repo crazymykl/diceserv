@@ -1,3 +1,13 @@
+{
+  @operators =
+    'd': "DiceRoll"
+    'D': "DiceRoll"
+    'r': "RerollBelow"
+    'R': "RerollAbove"
+    'k': "KeepLow"
+    'K': "KeepHigh"
+}
+
 mux_expression
   = lhs:multiplicative_expression op:[,#] rhs:mux_expression
   {
@@ -21,7 +31,7 @@ multiplicative_expression
   }
 
 additive_expression
-  = head:dice_expression tail:([+-] multiplicative_expression)*
+  = head:ternary_expression tail:([+-] multiplicative_expression)*
   {
     result = head
     for node in tail
@@ -33,11 +43,21 @@ additive_expression
     result
   }
 
+ternary_expression
+  = lhs:value [dD] mhs:value subop:[rRkK] rhs:value
+    {
+      type:       "TernaryExpression"
+      operator:   @operators[subop]
+      left:       lhs
+      middle:     mhs
+      right:      rhs
+    } / dice_expression
+
 dice_expression
-  = lhs:value "d" rhs:dice_expression
+  = lhs:value op:[dD] rhs:dice_expression
     {
       type:       "BinaryExpression"
-      operator:   "DiceRoll"
+      operator:   @operators[op]
       left:       lhs
       right:      rhs
     } / dicepool_expression
@@ -60,10 +80,10 @@ postfix_dicepool_expression
     } / unary_expression
 
 unary_expression
- = op:[-d] val:dice_expression
+ = op:[-dD] val:dice_expression
   {
     type:         "UnaryExpression"
-    operator:     if op == 'd' then "DiceRoll" else op
+    operator:     if op.toLowerCase() == 'd' then "DiceRoll" else op
     operand:      val
   } / value
 
