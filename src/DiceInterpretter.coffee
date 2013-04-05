@@ -87,7 +87,7 @@ class DiceInterpretter
         result
 
     result = (_roll(sides, options.above, options.below) for i in [1..dice])
-    result = result[-options.keep_low...options.keep_high]
+    result = result.sort()[-options.keep_low...options.keep_high]
       .reduce (t, s) -> t + s
     @dice_rolled.push
       dice:   dice
