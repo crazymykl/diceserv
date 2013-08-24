@@ -87,9 +87,9 @@ class DiceInterpretter
         result
 
     result = (_roll(sides, options.above, options.below) for i in [1..dice])
-    result = result.sort()[-options.keep_low...options.keep_high]
+    result = result.sort()[-options.keep_high...options.keep_low]
       .reduce (t, s) -> t + s
-    @dice_rolled.push
+    @dice_rolled.push merge {}, options,
       dice:   dice
       sides:  sides
       result: result
@@ -167,5 +167,10 @@ class DiceInterpretter
 
 exports.interpret = (expr) ->
   new DiceInterpretter().interpret expr
+
+merge = (target, objects...) ->
+  for obj in objects
+    target[k] = v for own k, v of obj
+  target
 
 exports.parse = parse
